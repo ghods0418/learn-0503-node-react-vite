@@ -373,3 +373,10 @@ body {
   background: rgba(255, 100, 100, 0.22);
   transform: scale(1.04);
 }
+
+.app-version {
+  margin: 1.5rem 0 0;
+  font-size: 0.75rem;
+  color: #5c6578;
+  letter-spacing: 0.02em;
+}

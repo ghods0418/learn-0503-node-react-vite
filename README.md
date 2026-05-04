@@ -53,6 +53,10 @@ npm run dev
 
 - **사이트 주소:** [https://ghods0418.github.io/learn-0503-node-react-vite/](https://ghods0418.github.io/learn-0503-node-react-vite/)
 
+### 배포 버전
+
+`package.json`의 `version`이 프로덕션 빌드 시 화면 하단 **배포 버전**으로 표시됩니다. Pages에 올릴 때마다 `main`에 푸시하면 Actions가 새 빌드를 배포합니다. 현재 패키지 버전: **1.0.0**.
+
 로컬에서 GitHub Pages와 동일한 경로로 빌드하려면:
 
 ```bash

@@ -250,6 +250,10 @@ export default function App() {
           </ul>
         )}
       </section>
+
+      <footer className="app-version" aria-label="배포 버전">
+        배포 버전 {__APP_VERSION__}
+      </footer>
     </div>
   )
 }
