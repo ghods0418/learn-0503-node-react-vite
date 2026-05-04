@@ -19,7 +19,15 @@ npm run dev
 
 - API 키는 **절대** 프론트에 넣지 않습니다. `server/index.mjs`가 루트 `.env`의 `OPENAI_API_KEY`만 읽습니다.
 - Vite 개발 서버가 `/api` 요청을 `http://127.0.0.1:3001`으로 넘깁니다.
-- **GitHub Pages** 정적 배포에는 백엔드가 없으므로, 호스팅된 사이트에서는 GPT 호출이 동작하지 않습니다.
+- **GitHub Pages** 정적 배포에는 백엔드가 없으므로, 호스팅된 사이트에서는 GPT 호출이 동작하지 않습니다. 브라우저에서 `github.io` 주소로 열면 POST가 **405 Method Not Allowed**로 막히는 것이 정상입니다.
+
+### GPT가 405로 실패할 때
+
+| 원인 | 해결 |
+|------|------|
+| `*.github.io` 로 배포된 사이트에서 시도 | GPT는 **로컬**에서만 사용. `npm run dev` 후 `http://localhost:5173` 접속 |
+| `npm run dev:vite` 만 실행 | `npm run dev`로 **API(3001)**까지 같이 띄우기 |
+| `npm run preview` 만 실행 | 다른 터미널에서 `npm run dev:api` 실행 후, 같은 호스트에서 `/api` 프록시 사용 |
 
 ## 기타 스크립트
 

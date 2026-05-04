@@ -59,6 +59,17 @@ body {
   gap: 0.65rem;
 }
 
+.flow-intro {
+  margin: 0 0 0.35rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.flow-intro strong {
+  color: #b8c4dc;
+}
+
 .label {
   font-size: 0.875rem;
   color: var(--muted);
@@ -95,20 +106,18 @@ body {
   margin-top: 0.35rem;
 }
 
-.gpt-block {
-  margin-top: 0.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid #2a3244;
-  display: flex;
-  flex-direction: column;
+.btn-row-split {
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.65rem;
+  margin-top: 0.35rem;
 }
 
-.gpt-heading {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text);
+.btn-row-split .btn,
+.btn-row-split .btn-gpt {
+  margin-top: 0;
+  flex: 1 1 140px;
+  min-width: 0;
 }
 
 .select {

@@ -44,6 +44,12 @@ const GPT_LANGUAGES = [
   { value: 'zh', label: '中文(간체)' },
 ]
 
+/** Vite base (로컬 `/`, GitHub Pages `/repo/`) + API 경로 */
+function quoteApiPath() {
+  const base = import.meta.env.BASE_URL ?? '/'
+  return `${base}${base.endsWith('/') ? '' : '/'}api/generate-quote`.replace(/\/{2,}/g, '/')
+}
+
 function loadSavedFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -78,7 +84,7 @@ export default function App() {
     setGptError(null)
     setGptLoading(true)
     try {
-      const res = await fetch('/api/generate-quote', {
+      const res = await fetch(quoteApiPath(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -88,6 +94,11 @@ export default function App() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
+        if (res.status === 405) {
+          throw new Error(
+            '405: 이 주소에서는 POST가 허용되지 않습니다. GitHub Pages 등 정적 사이트이거나, API 서버 없이 미리보기만 켠 경우에 자주 발생합니다. http://localhost:5173 에서 npm run dev(Vite+API 동시)로 실행했는지 확인하세요.',
+          )
+        }
         throw new Error(data.error || `요청 실패 (${res.status})`)
       }
       setQuote({
@@ -130,6 +141,28 @@ export default function App() {
       </header>
 
       <section className="controls">
+        <p className="flow-intro">
+          <strong>1.</strong> 생성 언어를 고르고 <strong>2.</strong> 키워드를 입력한 뒤{' '}
+          <strong>3.</strong> 아래에서 생성 방식을 고르세요.
+        </p>
+
+        <label className="label" htmlFor="gpt-lang">
+          생성 언어 (GPT 응답)
+        </label>
+        <select
+          id="gpt-lang"
+          className="select"
+          value={gptLang}
+          onChange={(e) => setGptLang(e.target.value)}
+          disabled={gptLoading}
+        >
+          {GPT_LANGUAGES.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
         <label className="label" htmlFor="keyword">
           주제나 감정 키워드
         </label>
@@ -137,35 +170,15 @@ export default function App() {
           id="keyword"
           className="input"
           type="text"
-          placeholder="예: 성공, 도전, 휴식"
+          placeholder="예: 성공, 도전, 휴식 (비워도 됨)"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
         />
-        <div className="btn-row">
-          <button type="button" className="btn" onClick={handleGenerate}>
+
+        <div className="btn-row btn-row-split">
+          <button type="button" className="btn" onClick={handleGenerate} disabled={gptLoading}>
             로컬 명언 뽑기
           </button>
-        </div>
-
-        <div className="gpt-block">
-          <p className="gpt-heading">GPT로 새 명언 만들기</p>
-          <label className="label" htmlFor="gpt-lang">
-            생성 언어
-          </label>
-          <select
-            id="gpt-lang"
-            className="select"
-            value={gptLang}
-            onChange={(e) => setGptLang(e.target.value)}
-            disabled={gptLoading}
-          >
-            {GPT_LANGUAGES.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
           <button
             type="button"
             className="btn btn-gpt"
@@ -174,12 +187,15 @@ export default function App() {
           >
             {gptLoading ? '생성 중…' : 'GPT로 명언 생성'}
           </button>
-          {gptError ? <p className="api-error">{gptError}</p> : null}
-          <p className="api-hint">
-            API 키는 서버(.env)에서만 사용됩니다. <code className="inline-code">npm run dev</code>로
-            Vite와 API가 함께 떠야 합니다.
-          </p>
         </div>
+
+        {gptError ? <p className="api-error">{gptError}</p> : null}
+        <p className="api-hint">
+          GPT는 <code className="inline-code">http://localhost:5173</code>에서{' '}
+          <code className="inline-code">npm run dev</code>(Vite+API 동시)일 때만 동작합니다. API 키는{' '}
+          <code className="inline-code">.env</code>의 <code className="inline-code">OPENAI_API_KEY</code>
+          입니다.
+        </p>
       </section>
 
       <section className="card-wrap">
@@ -200,9 +216,7 @@ export default function App() {
             </div>
           </article>
         ) : (
-          <p className="hint">
-            키워드를 입력한 뒤 로컬 명언을 뽑거나, 언어를 고르고 GPT로 생성해 보세요.
-          </p>
+          <p className="hint">위에서 언어·키워드를 고른 뒤 로컬 또는 GPT로 명언을 만들어 보세요.</p>
         )}
       </section>
 
