@@ -59,15 +59,62 @@ body {
   gap: 0.65rem;
 }
 
-.flow-intro {
-  margin: 0 0 0.35rem;
-  font-size: 0.88rem;
-  color: var(--muted);
-  line-height: 1.55;
+.lang-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
 }
 
-.flow-intro strong {
-  color: #b8c4dc;
+.lang-fieldset .label {
+  margin-bottom: 0.5rem;
+}
+
+.lang-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lang-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #2d3548;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.lang-chip:hover:not(:disabled) {
+  border-color: rgba(108, 158, 255, 0.55);
+  transform: scale(1.02);
+}
+
+.lang-chip.is-active {
+  border-color: var(--accent);
+  background: rgba(108, 158, 255, 0.14);
+  box-shadow: 0 0 0 2px rgba(108, 158, 255, 0.2);
+}
+
+.lang-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lang-chip-flag {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.lang-chip-name {
+  white-space: nowrap;
 }
 
 .label {
@@ -106,51 +153,8 @@ body {
   margin-top: 0.35rem;
 }
 
-.btn-row-split {
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 0.35rem;
-}
-
-.btn-row-split .btn,
-.btn-row-split .btn-gpt {
-  margin-top: 0;
-  flex: 1 1 140px;
-  min-width: 0;
-}
-
-.select {
+.btn-generate {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #2d3548;
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 1rem;
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(108, 158, 255, 0.25);
-}
-
-.select:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.btn-gpt {
-  margin-top: 0.25rem;
-  background: linear-gradient(180deg, #5ee0c0 0%, #2fb89a 100%);
-  color: #0d1f1a;
-}
-
-.btn-gpt:hover:not(:disabled) {
-  filter: brightness(1.05);
 }
 
 .api-error {
@@ -158,22 +162,6 @@ body {
   font-size: 0.875rem;
   color: #f0a8a8;
   line-height: 1.45;
-}
-
-.api-hint {
-  margin: 0;
-  font-size: 0.78rem;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.inline-code {
-  font-family: ui-monospace, 'Cascadia Code', monospace;
-  font-size: 0.85em;
-  padding: 0.1em 0.35em;
-  border-radius: 6px;
-  background: #252d3d;
-  color: #c8d4f0;
 }
 
 .btn {

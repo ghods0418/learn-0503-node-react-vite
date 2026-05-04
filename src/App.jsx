@@ -2,46 +2,12 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'favorite-quotes'
 
-const QUOTES = [
-  { text: '성공은 준비된 자에게 기회가 왔을 때 찾아온다.', author: '세네카', tag: '성공' },
-  { text: '실패는 성공의 어머니다.', author: '토마스 에디슨', tag: '성공' },
-  { text: '도전 없이는 승리도 없다.', author: '에디트 해밀턴', tag: '도전' },
-  { text: '가장 큰 위험은 위험 없는 삶이다.', author: '프레드릭 니체', tag: '도전' },
-  { text: '쉬어가는 것은 길을 잃지 않기 위한 것이다.', author: '노자', tag: '휴식' },
-  { text: '느리게 가도 멈추지 않는다면 된다.', author: '공자', tag: '휴식' },
-  { text: '우정은 영혼의 결혼이다.', author: '프란시스 베이컨', tag: '우정' },
-  { text: '진정한 친구는 어두울 때 빛을 비춘다.', author: '엘렌 버킹', tag: '우정' },
-  { text: '할 수 있다고 믿는 자는 결국 그 길을 간다.', author: '괴테', tag: '일반' },
-  { text: '오늘 할 수 있는 일을 내일로 미루지 마라.', author: '벤저민 프랭클린', tag: '일반' },
-  { text: '작은 기회의 씨앗이 위대한 업적의 열매를 맺는다.', author: '데모크리토스', tag: '일반' },
-  { text: '행복은 습관이다. 그것을 몸에 지니라.', author: '허버드', tag: '일반' },
-]
-
-function pickRandom(list) {
-  if (!list.length) return null
-  return list[Math.floor(Math.random() * list.length)]
-}
-
-function findQuotesByKeyword(keyword) {
-  const kw = keyword.trim().toLowerCase()
-  if (!kw) return []
-
-  return QUOTES.filter((q) => {
-    const tag = q.tag.toLowerCase()
-    return tag.includes(kw) || kw.includes(tag)
-  })
-}
-
-function getGeneralQuotes() {
-  return QUOTES.filter((q) => q.tag === '일반')
-}
-
 const GPT_LANGUAGES = [
-  { value: 'ko', label: '한국어' },
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Español' },
-  { value: 'ja', label: '日本語' },
-  { value: 'zh', label: '中文(간체)' },
+  { value: 'ko', flag: '🇰🇷', name: '한국' },
+  { value: 'en', flag: '🇺🇸', name: '미국' },
+  { value: 'es', flag: '🇪🇸', name: '스페인' },
+  { value: 'ja', flag: '🇯🇵', name: '일본' },
+  { value: 'zh', flag: '🇨🇳', name: '중국' },
 ]
 
 /** Vite base (로컬 `/`, GitHub Pages `/repo/`) + API 경로 */
@@ -73,14 +39,7 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
   }, [saved])
 
-  function handleGenerate() {
-    setGptError(null)
-    const matched = findQuotesByKeyword(keyword)
-    const pool = matched.length > 0 ? matched : getGeneralQuotes()
-    setQuote(pickRandom(pool))
-  }
-
-  async function handleGptGenerate() {
+  async function handleGenerateQuote() {
     setGptError(null)
     setGptLoading(true)
     try {
@@ -141,27 +100,26 @@ export default function App() {
       </header>
 
       <section className="controls">
-        <p className="flow-intro">
-          <strong>1.</strong> 생성 언어를 고르고 <strong>2.</strong> 키워드를 입력한 뒤{' '}
-          <strong>3.</strong> 아래에서 생성 방식을 고르세요.
-        </p>
-
-        <label className="label" htmlFor="gpt-lang">
-          생성 언어 (GPT 응답)
-        </label>
-        <select
-          id="gpt-lang"
-          className="select"
-          value={gptLang}
-          onChange={(e) => setGptLang(e.target.value)}
-          disabled={gptLoading}
-        >
-          {GPT_LANGUAGES.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        <fieldset className="lang-fieldset">
+          <legend className="label">생성 언어</legend>
+          <div className="lang-chips" role="group" aria-label="생성 언어 선택">
+            {GPT_LANGUAGES.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`lang-chip ${gptLang === opt.value ? 'is-active' : ''}`}
+                onClick={() => setGptLang(opt.value)}
+                disabled={gptLoading}
+                aria-pressed={gptLang === opt.value}
+              >
+                <span className="lang-chip-flag" aria-hidden="true">
+                  {opt.flag}
+                </span>
+                <span className="lang-chip-name">{opt.name}</span>
+              </button>
+            ))}
+          </div>
+        </fieldset>
 
         <label className="label" htmlFor="keyword">
           주제나 감정 키워드
@@ -173,29 +131,21 @@ export default function App() {
           placeholder="예: 성공, 도전, 휴식 (비워도 됨)"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && !gptLoading && handleGenerateQuote()}
         />
 
-        <div className="btn-row btn-row-split">
-          <button type="button" className="btn" onClick={handleGenerate} disabled={gptLoading}>
-            로컬 명언 뽑기
-          </button>
+        <div className="btn-row">
           <button
             type="button"
-            className="btn btn-gpt"
-            onClick={handleGptGenerate}
+            className="btn btn-generate"
+            onClick={handleGenerateQuote}
             disabled={gptLoading}
           >
-            {gptLoading ? '생성 중…' : 'GPT로 명언 생성'}
+            {gptLoading ? '생성 중…' : '명언 생성'}
           </button>
         </div>
 
         {gptError ? <p className="api-error">{gptError}</p> : null}
-        <p className="api-hint">
-          GPT는 <code className="inline-code">http://localhost:5173</code>에서{' '}
-          <code className="inline-code">npm run dev</code>(Vite+API 동시)일 때만 동작합니다. API 키는{' '}
-          <code className="inline-code">.env</code>의 <code className="inline-code">OPENAI_API_KEY</code>
-          입니다.
-        </p>
       </section>
 
       <section className="card-wrap">
@@ -216,7 +166,7 @@ export default function App() {
             </div>
           </article>
         ) : (
-          <p className="hint">위에서 언어·키워드를 고른 뒤 로컬 또는 GPT로 명언을 만들어 보세요.</p>
+          <p className="hint">언어와 키워드를 고른 뒤 명언 생성을 눌러 보세요.</p>
         )}
       </section>
 
