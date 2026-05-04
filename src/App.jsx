@@ -36,6 +36,14 @@ function getGeneralQuotes() {
   return QUOTES.filter((q) => q.tag === '일반')
 }
 
+const GPT_LANGUAGES = [
+  { value: 'ko', label: '한국어' },
+  { value: 'en', label: 'English' },
+  { value: 'es', label: 'Español' },
+  { value: 'ja', label: '日本語' },
+  { value: 'zh', label: '中文(간체)' },
+]
+
 function loadSavedFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -49,17 +57,49 @@ function loadSavedFromStorage() {
 
 export default function App() {
   const [keyword, setKeyword] = useState('')
+  const [gptLang, setGptLang] = useState('ko')
   const [quote, setQuote] = useState(null)
   const [saved, setSaved] = useState(() => loadSavedFromStorage())
+  const [gptLoading, setGptLoading] = useState(false)
+  const [gptError, setGptError] = useState(null)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
   }, [saved])
 
   function handleGenerate() {
+    setGptError(null)
     const matched = findQuotesByKeyword(keyword)
     const pool = matched.length > 0 ? matched : getGeneralQuotes()
     setQuote(pickRandom(pool))
+  }
+
+  async function handleGptGenerate() {
+    setGptError(null)
+    setGptLoading(true)
+    try {
+      const res = await fetch('/api/generate-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: gptLang,
+          keyword: keyword,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.error || `요청 실패 (${res.status})`)
+      }
+      setQuote({
+        text: data.text,
+        author: data.author,
+        tag: data.tag || 'GPT',
+      })
+    } catch (e) {
+      setGptError(e instanceof Error ? e.message : '알 수 없는 오류')
+    } finally {
+      setGptLoading(false)
+    }
   }
 
   const isCurrentSaved =
@@ -102,9 +142,44 @@ export default function App() {
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
         />
-        <button type="button" className="btn" onClick={handleGenerate}>
-          명언 생성하기
-        </button>
+        <div className="btn-row">
+          <button type="button" className="btn" onClick={handleGenerate}>
+            로컬 명언 뽑기
+          </button>
+        </div>
+
+        <div className="gpt-block">
+          <p className="gpt-heading">GPT로 새 명언 만들기</p>
+          <label className="label" htmlFor="gpt-lang">
+            생성 언어
+          </label>
+          <select
+            id="gpt-lang"
+            className="select"
+            value={gptLang}
+            onChange={(e) => setGptLang(e.target.value)}
+            disabled={gptLoading}
+          >
+            {GPT_LANGUAGES.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="btn btn-gpt"
+            onClick={handleGptGenerate}
+            disabled={gptLoading}
+          >
+            {gptLoading ? '생성 중…' : 'GPT로 명언 생성'}
+          </button>
+          {gptError ? <p className="api-error">{gptError}</p> : null}
+          <p className="api-hint">
+            API 키는 서버(.env)에서만 사용됩니다. <code className="inline-code">npm run dev</code>로
+            Vite와 API가 함께 떠야 합니다.
+          </p>
+        </div>
       </section>
 
       <section className="card-wrap">
@@ -125,7 +200,9 @@ export default function App() {
             </div>
           </article>
         ) : (
-          <p className="hint">키워드를 입력하고 버튼을 눌러 명언을 받아보세요.</p>
+          <p className="hint">
+            키워드를 입력한 뒤 로컬 명언을 뽑거나, 언어를 고르고 GPT로 생성해 보세요.
+          </p>
         )}
       </section>
 

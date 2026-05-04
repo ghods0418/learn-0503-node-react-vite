@@ -13,12 +13,23 @@ npm run dev
 
 브라우저에서 `http://localhost:5173` 으로 접속하세요.
 
+`npm run dev`는 **Vite(5173)**와 **API 서버(3001)**를 동시에 띄웁니다. GPT 기능만 쓰려면 루트에 `.env`를 두고 `OPENAI_API_KEY`를 넣은 뒤 실행하세요. 예시는 [.env.example](.env.example)를 참고하면 됩니다.
+
+## GPT API (로컬 전용)
+
+- API 키는 **절대** 프론트에 넣지 않습니다. `server/index.mjs`가 루트 `.env`의 `OPENAI_API_KEY`만 읽습니다.
+- Vite 개발 서버가 `/api` 요청을 `http://127.0.0.1:3001`으로 넘깁니다.
+- **GitHub Pages** 정적 배포에는 백엔드가 없으므로, 호스팅된 사이트에서는 GPT 호출이 동작하지 않습니다.
+
 ## 기타 스크립트
 
 | 명령 | 설명 |
 |------|------|
+| `npm run dev` | Vite(5173) + API(3001) 동시 실행 |
+| `npm run dev:vite` | Vite만 |
+| `npm run dev:api` | API만 |
 | `npm run build` | 프로덕션 빌드 |
-| `npm run preview` | 빌드 결과 미리보기 (포트 5173) |
+| `npm run preview` | 빌드 미리보기(5173). GPT 쓰려면 별도 터미널에서 `npm run dev:api` 필요 |
 
 ## GitHub Pages 배포
 
