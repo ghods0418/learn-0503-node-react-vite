@@ -22,10 +22,17 @@ npm run dev
 
 ## GitHub Pages 배포
 
-저장소에 푸시하면 [GitHub Actions](.github/workflows/deploy-github-pages.yml)가 빌드 후 Pages에 올립니다.
+### 1) 저장소에서 Pages 켜기 (푸시보다 먼저 해도 됨)
+
+[Settings → Pages](https://github.com/ghods0418/learn-0503-node-react-vite/settings/pages)에서 **Build and deployment → Source**를 **GitHub Actions**로 선택합니다.  
+이 설정이 없으면 배포 단계에서 `Failed to create deployment (404)`처럼 실패할 수 있습니다.
+
+### 2) 워크플로 실행
+
+`main`에 푸시하면 [GitHub Actions](.github/workflows/deploy-github-pages.yml)가 빌드 후 Pages에 올립니다.  
+이미 실패한 실행이 있다면, 위 1)을 저장한 뒤 [Actions](https://github.com/ghods0418/learn-0503-node-react-vite/actions)에서 해당 워크플로를 **Re-run all jobs** 하면 됩니다.
 
 - **사이트 주소:** [https://ghods0418.github.io/learn-0503-node-react-vite/](https://ghods0418.github.io/learn-0503-node-react-vite/)
-- 저장소 **Settings → Pages → Build and deployment → Source**에서 **GitHub Actions**를 선택해야 첫 배포가 동작합니다.
 
 로컬에서 GitHub Pages와 동일한 경로로 빌드하려면:
 
