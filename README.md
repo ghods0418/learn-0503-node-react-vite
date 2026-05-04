@@ -29,6 +29,10 @@ npm run dev
 | `npm run dev:vite` 만 실행 | `npm run dev`로 **API(3001)**까지 같이 띄우기 |
 | `npm run preview` 만 실행 | 다른 터미널에서 `npm run dev:api` 실행 후, 같은 호스트에서 `/api` 프록시 사용 |
 
+### GPT가 404로 실패할 때 (로컬)
+
+터미널에 **`BASE_PATH`**(예: Pages용 `/learn-0503-node-react-vite/`)가 남아 있으면 주소가 `http://localhost:5173/learn-0503-node-react-vite/` 형태가 되고, 예전에는 Vite 프록시가 `/api`만 잡아 **404**가 날 수 있었습니다. 최신 코드는 `/저장소이름/api`도 프록시합니다. 그래도 문제면 **`Remove-Item Env:BASE_PATH`** 후 `npm run dev`를 다시 실행하거나, 주소를 **`http://localhost:5173/`** (루트)로 열어 보세요.
+
 ## 기타 스크립트
 
 | 명령 | 설명 |

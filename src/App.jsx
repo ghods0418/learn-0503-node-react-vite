@@ -58,6 +58,11 @@ export default function App() {
             '405: 이 주소에서는 POST가 허용되지 않습니다. GitHub Pages 등 정적 사이트이거나, API 서버 없이 미리보기만 켠 경우에 자주 발생합니다. http://localhost:5173 에서 npm run dev(Vite+API 동시)로 실행했는지 확인하세요.',
           )
         }
+        if (res.status === 404) {
+          throw new Error(
+            '404: API를 찾지 못했습니다. npm run dev 로 Vite와 API(3001)를 함께 켰는지 확인하고, 터미널의 BASE_PATH를 지운 뒤 다시 실행해 보세요.',
+          )
+        }
         throw new Error(data.error || `요청 실패 (${res.status})`)
       }
       setQuote({
