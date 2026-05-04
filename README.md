@@ -19,6 +19,7 @@ npm run dev
 
 - API 키는 **절대** 프론트에 넣지 않습니다. `server/index.mjs`가 루트 `.env`의 `OPENAI_API_KEY`만 읽습니다.
 - Vite 개발 서버가 `/api` 요청을 `http://127.0.0.1:3001`으로 넘깁니다.
+- OpenAI에서 **429 / quota** 오류가 나면 계정 [Billing](https://platform.openai.com/account/billing)에서 크레딧·결제·한도를 확인해야 합니다. (앱 코드로 해결되지 않습니다.)
 - **GitHub Pages** 정적 배포에는 백엔드가 없으므로, 호스팅된 사이트에서는 GPT 호출이 동작하지 않습니다. 브라우저에서 `github.io` 주소로 열면 POST가 **405 Method Not Allowed**로 막히는 것이 정상입니다.
 
 ### GPT가 405로 실패할 때

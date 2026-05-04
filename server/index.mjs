@@ -80,6 +80,22 @@ app.post('/api/generate-quote', async (req, res) => {
     res.json({ text, author, tag })
   } catch (err) {
     console.error(err)
+    const httpStatus = err?.status ?? err?.response?.status
+    const code = err?.code ?? err?.error?.code
+    const rawMsg = typeof err?.message === 'string' ? err.message : ''
+
+    const isQuota =
+      httpStatus === 429 ||
+      code === 'insufficient_quota' ||
+      /quota|429|rate limit/i.test(rawMsg)
+
+    if (isQuota) {
+      return res.status(429).json({
+        error:
+          'OpenAI 사용 한도에 도달했습니다. 무료 크레딧 만료·월 한도·미결제 등으로 거절된 경우가 많습니다. https://platform.openai.com/account/billing 에서 결제·플랜·한도를 확인하세요.',
+      })
+    }
+
     const msg = err instanceof Error ? err.message : '명언 생성에 실패했습니다.'
     res.status(500).json({ error: msg })
   }
